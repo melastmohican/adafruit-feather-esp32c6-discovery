@@ -194,6 +194,7 @@ cargo run --example ili9341_spi_text
 ```
 
 **Hardware:**
+
 - Display: [Adafruit 2.2" 18-bit color TFT LCD display](https://www.adafruit.com/product/1480)
 - Connection: Hardware SPI
 
@@ -208,8 +209,39 @@ cargo run --example zermatt_snow
 ```
 
 **Hardware:**
+
 - Display: [Adafruit 2.2" 18-bit color TFT LCD display](https://www.adafruit.com/product/1480)
 - Connection: Hardware SPI
+
+#### max7219_8x8_matrix
+
+Demonstrates drawing primitives and 20 different animations (Bouncing Ball, Pong Game, Heartbeat, Blinking Smile, etc.) on a MAX7219 8x8 LED Matrix.
+
+```bash
+cargo run --example max7219_8x8_matrix
+```
+
+**Hardware:**
+
+- Display: MAX7219 8x8 LED Matrix
+- Connection: Hardware SPI
+
+**Wiring for Adafruit Feather ESP32-C6:**
+
+```text
+MAX7219 Pin ->  Feather ESP32-C6 (Hardware SPI)
+-----------     ----------------------------------
+VCC         ->  5V (USB)
+GND         ->  GND
+DIN         ->  IO7  (MOSI)
+CS          ->  IO5  (CS)
+CLK         ->  IO6  (SCK)
+```
+
+**Features:**
+- Self-contained lightweight MAX7219 driver
+- Custom LCG (Linear Congruential Generator) for random numbers
+- 20 unique animations including Conway's Game of Life
 
 ---
 
