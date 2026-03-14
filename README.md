@@ -168,3 +168,58 @@ cargo run --example gc9a01_spi_text
 **Hardware:**
 - Display: UNI128-240240-RGB-7-V1.0 (GC9A01 controller)
 - Connection: Hardware SPI (Same wiring as `gc9a01_spi`)
+
+#### ili9341_spi
+
+Displays a 320x240 image (Mocha) on the ILI9341 2.2" TFT LCD display.
+
+```bash
+cargo run --example ili9341_spi
+```
+
+**Hardware:**
+
+- Display: [Adafruit 2.2" 18-bit color TFT LCD display with microSD card breakout - EYESPI Connector](https://www.adafruit.com/product/1480)
+- Connection: Hardware SPI
+
+#### ili9341_spi_text
+
+Demonstrates drawing text and shapes on a 240x320 ILI9341 display.
+
+```bash
+cargo run --example ili9341_spi_text
+```
+
+**Hardware:**
+- Display: [Adafruit 2.2" 18-bit color TFT LCD display](https://www.adafruit.com/product/1480)
+- Connection: Hardware SPI
+
+#### zermatt_snow
+
+Full-screen Zermatt image with physics-based falling snow effect.
+
+```bash
+cargo run --example zermatt_snow
+```
+
+**Hardware:**
+- Display: [Adafruit 2.2" 18-bit color TFT LCD display](https://www.adafruit.com/product/1480)
+- Connection: Hardware SPI
+
+---
+
+### Shared Wiring for ILI9341 Displays
+
+```text
+ILI9341 Pin ->  Feather ESP32-C6 (Hardware SPI)
+-----------     ----------------------------------
+VCC         ->  3.3V
+GND         ->  GND
+SCK         ->  IO21 (SCK)
+MOSI        ->  IO22 (MOSI)
+MISO        ->  IO23 (MISO)
+CS          ->  IO7  (D7)
+DC          ->  IO6  (A2)
+RST         ->  IO5  (A3)
+LITE        ->  IO4  (A0)
+```
