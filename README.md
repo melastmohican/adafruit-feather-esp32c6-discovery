@@ -166,12 +166,15 @@ cargo run --example gc9a01_spi_text
 ```
 
 **Hardware:**
+
 - Display: UNI128-240240-RGB-7-V1.0 (GC9A01 controller)
 - Connection: Hardware SPI (Same wiring as `gc9a01_spi`)
 
 #### ili9341_spi
 
 Displays a 320x240 image (Mocha) on the ILI9341 2.2" TFT LCD display.
+
+![Mocha Example](examples/mocha_320x240.jpg)
 
 ```bash
 cargo run --example ili9341_spi
@@ -198,6 +201,8 @@ cargo run --example ili9341_spi_text
 
 Full-screen Zermatt image with physics-based falling snow effect.
 
+![Zermatt Snow Example](examples/zermatt_320x240.jpg)
+
 ```bash
 cargo run --example zermatt_snow
 ```
@@ -205,6 +210,20 @@ cargo run --example zermatt_snow
 **Hardware:**
 - Display: [Adafruit 2.2" 18-bit color TFT LCD display](https://www.adafruit.com/product/1480)
 - Connection: Hardware SPI
+
+---
+
+### Asset Conversion
+
+The `tinybmp` library used in these examples requires standard BMP files. The original JPG assets were converted to the correct resolution (320x240) using ImageMagick:
+
+```bash
+# Convert Mocha image
+magick examples/mocha_320x240.jpg examples/mocha_320x240.bmp
+
+# Convert Zermatt image
+magick examples/zermatt_320x240.jpg examples/zermatt_320x240.bmp
+```
 
 ---
 

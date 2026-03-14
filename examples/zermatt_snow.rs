@@ -32,7 +32,7 @@ use display_interface_spi::SPIInterface;
 use embedded_graphics::{
     Drawable,
     draw_target::DrawTarget,
-    geometry::Point,
+    geometry::{Point, Size},
     image::{GetPixel, Image},
     pixelcolor::{Rgb565, RgbColor},
 };
@@ -81,7 +81,7 @@ struct SnowGrid {
 }
 
 impl SnowGrid {
-    fn new() -> Self {
+    const fn new() -> Self {
         Self {
             grid: [0u8; GRID_SIZE_BYTES],
         }
@@ -105,7 +105,13 @@ impl SnowGrid {
             self.grid[byte_index] &= !(1 << bit_index);
         }
     }
+
+    fn clear(&mut self) {
+        self.grid.fill(0);
+    }
 }
+
+static mut SNOW_GRID: SnowGrid = SnowGrid::new();
 
 #[main]
 fn main() -> ! {
@@ -181,8 +187,12 @@ fn main() -> ! {
 
     info!("Image displayed! Starting snow animation...");
 
-    // Initialize snow grid
-    let mut snow_grid = SnowGrid::new();
+    // Initialize/clear snow grid
+    let snow_grid = unsafe {
+        let grid_ptr = core::ptr::addr_of_mut!(SNOW_GRID);
+        (*grid_ptr).clear();
+        &mut *grid_ptr
+    };
 
     let mut frame_count = 0u32;
 
@@ -205,11 +215,11 @@ fn main() -> ! {
                         // Move snowflake down
                         snow_grid.set_cell(row + 1, future_col, true);
                         render_flake(&mut display, row + 1, future_col);
-                    }
 
-                    // Clear current position
-                    snow_grid.set_cell(row, col, false);
-                    render_void(&mut display, bmp_data, row, col);
+                        // Clear current position
+                        snow_grid.set_cell(row, col, false);
+                        render_void(&mut display, &bmp, row, col);
+                    }
                 }
             }
         }
@@ -218,20 +228,20 @@ fn main() -> ! {
         for col in 0..PHY_WIDTH {
             if snow_grid.get_cell(PHY_HEIGHT - 1, col) {
                 snow_grid.set_cell(PHY_HEIGHT - 1, col, false);
-                render_void(&mut display, bmp_data, PHY_HEIGHT - 1, col);
+                render_void(&mut display, &bmp, PHY_HEIGHT - 1, col);
             }
         }
 
         // Create new snow at the top
         for col in 0..PHY_WIDTH {
-            if rng.random().is_multiple_of(25) {
+            if rng.random().is_multiple_of(25) && !snow_grid.get_cell(0, col) {
                 snow_grid.set_cell(0, col, true);
                 render_flake(&mut display, 0, col);
             }
         }
 
         // Delay between frames
-        delay.delay_millis(20);
+        delay.delay_millis(10);
 
         frame_count += 1;
         if frame_count.is_multiple_of(50) {
@@ -245,49 +255,44 @@ fn render_flake(display: &mut impl DrawTarget<Color = Rgb565>, row: usize, col: 
     let x = (col * PHY_DISP_RATIO) as i32;
     let y = (row * PHY_DISP_RATIO) as i32;
 
-    // Draw a small 2x2 white square for each snowflake
-    for dy in 0..FLAKE_SIZE {
-        for dx in 0..FLAKE_SIZE {
-            display
-                .draw_iter(core::iter::once(embedded_graphics::Pixel(
-                    Point::new(x + dx, y + dy),
-                    SNOW_COLOR,
-                )))
-                .ok();
-        }
-    }
+    use embedded_graphics::primitives::{PrimitiveStyle, Rectangle, StyledDrawable};
+    Rectangle::new(
+        Point::new(x, y),
+        Size::new(FLAKE_SIZE as u32, FLAKE_SIZE as u32),
+    )
+    .draw_styled(&PrimitiveStyle::with_fill(SNOW_COLOR), display)
+    .ok();
 }
 
 // Restore the background image at the given grid position
 fn render_void(
     display: &mut impl DrawTarget<Color = Rgb565>,
-    bmp_data: &[u8],
+    bmp: &Bmp<Rgb565>,
     row: usize,
     col: usize,
 ) {
     let x = (col * PHY_DISP_RATIO) as i32;
     let y = (row * PHY_DISP_RATIO) as i32;
 
-    // Load the BMP and extract the pixel region
-    if let Ok(bmp) = Bmp::<Rgb565>::from_slice(bmp_data) {
-        // For simplicity, redraw pixels one by one
-        for dy in 0..FLAKE_SIZE {
-            for dx in 0..FLAKE_SIZE {
-                let px = x + dx;
-                let py = y + dy;
+    // Drawing a specific region of the BMP efficiently.
+    // We use a Rectangle to define the area and iterate over its pixels.
+    // mipidsi and tinybmp work well together for this.
 
-                if px >= 0 && px < DISPLAY_WIDTH as i32 && py >= 0 && py < DISPLAY_HEIGHT as i32 {
-                    // Get pixel from BMP
-                    if let Some(pixel_color) = bmp.pixel(Point::new(px, py)) {
-                        display
-                            .draw_iter(core::iter::once(embedded_graphics::Pixel(
-                                Point::new(px, py),
-                                pixel_color,
-                            )))
-                            .ok();
-                    }
-                }
-            }
-        }
-    }
+    use embedded_graphics::primitives::Rectangle;
+    let area = Rectangle::new(
+        Point::new(x, y),
+        Size::new(FLAKE_SIZE as u32, FLAKE_SIZE as u32),
+    );
+
+    display
+        .fill_contiguous(
+            &area,
+            (0..FLAKE_SIZE).flat_map(|dy| {
+                (0..FLAKE_SIZE).map(move |dx| {
+                    bmp.pixel(Point::new(x + dx, y + dy))
+                        .unwrap_or(Rgb565::BLACK)
+                })
+            }),
+        )
+        .ok();
 }
