@@ -6,12 +6,21 @@ This project explores the [Adafruit ESP32-C6 Feather](https://www.adafruit.com/p
 ![Adafruit Feather ESP32-C6 Pinout](https://cdn-learn.adafruit.com/assets/assets/000/139/939/large1024/adafruit_products_Adafruit_Feather_ESP32-C6_PrettyPins_2.png)
 
 ## Documentation
+
 - [Primary Guide: Adafruit ESP32-C6 Feather](https://learn.adafruit.com/adafruit-esp32-c6-feather)
 - [Adafruit Feather ESP32-C6 PrettyPins](https://github.com/adafruit/Adafruit-ESP32-C6-Feather-PCB/blob/main/Adafruit%20Feather%20ESP32-C6%20PrettyPins%202.pdf)
 
 ## Examples
 
-### bme280_ssd1306_i2c
+The examples are grouped by the communication protocol they use.
+
+---
+
+### I2C Examples
+
+The standard I2C pins for the Adafruit Feather ESP32-C6 (SCL: IO18, SDA: IO19 as per the STEMMA QT / Qwiic connector) are used for these examples.
+
+#### bme280_ssd1306_i2c
 
 Reads temperature, humidity, and atmospheric pressure from an Adafruit BME280 sensor and displays the formatted values on a generic SSD1306 (128x64) OLED screen.
 
@@ -75,3 +84,87 @@ graph LR
 - Fallback address detection for both the display and the environment sensor
 
 **Output:** Formatted Temperature in °C, humidity in %, and atmospheric pressure in hPa rendered directly to the OLED screen.
+
+#### bme280_i2c
+
+Reads temperature, humidity, and atmospheric pressure from an Adafruit BME280 sensor and prints the values to the console.
+
+```bash
+cargo run --example bme280_i2c
+```
+
+**Hardware:**
+
+- Sensor: Adafruit BME280 Temperature Humidity Pressure Sensor
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+#### ssd1306_i2c
+
+Draws a 1-bit black and white image (64x64 pixels) on a 128x64 SSD1306 OLED screen over I2C.
+
+```bash
+cargo run --example ssd1306_i2c
+```
+
+**Hardware:**
+
+- Display: Generic SSD1306 (128x64) OLED screen
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+#### ssd1306_i2c_text
+
+Demonstrates drawing text and shapes on a 128x64 SSD1306 OLED screen over I2C.
+
+```bash
+cargo run --example ssd1306_i2c_text
+```
+
+**Hardware:**
+
+- Display: Generic SSD1306 (128x64) OLED screen
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+---
+
+### SPI Examples
+
+These examples use the hardware SPI bus of the ESP32-C6.
+
+#### gc9a01_spi
+
+Draws images on a 240x240 round GC9A01 display over SPI.
+
+```bash
+cargo run --example gc9a01_spi
+```
+
+**Hardware:**
+
+- Display: UNI128-240240-RGB-7-V1.0 (GC9A01 controller)
+- Connection: Hardware SPI
+
+**Wiring for Adafruit Feather ESP32-C6:**
+
+```text
+GC9A01 Pin  ->  Feather ESP32-C6 (Hardware SPI)
+----------      ----------------------------------
+VCC         ->  3V
+GND         ->  GND
+SCL         ->  IO21 (SCK)
+SDA         ->  IO22 (MOSI)
+DC          ->  IO6  (A2)
+CS          ->  IO7  (D7)
+RST         ->  IO5  (A3)
+```
+
+#### gc9a01_spi_text
+
+Demonstrates drawing text and shapes on a 240x240 round GC9A01 display over SPI.
+
+```bash
+cargo run --example gc9a01_spi_text
+```
+
+**Hardware:**
+- Display: UNI128-240240-RGB-7-V1.0 (GC9A01 controller)
+- Connection: Hardware SPI (Same wiring as `gc9a01_spi`)
