@@ -179,6 +179,57 @@ cargo run --example ssd1306_i2c_text
 
 ---
 
+### Digital IO Examples
+
+Examples demonstrating digital input and output capabilities.
+
+#### ttp223_basic
+
+Minimal touch detection example that prints a message on touch and release.
+
+```bash
+cargo run --example ttp223_basic
+```
+
+#### ttp223_touch
+
+Advanced example with asymmetric debouncing (Fast-On, Slow-Off) and gesture detection (Taps vs Long Presses). Toggles the User LED (GPIO 15) when touched.
+
+```bash
+cargo run --example ttp223_touch
+```
+
+**Hardware:**
+
+- Sensor: [TTP223 Digital Capacitive Touch Sensor](https://www.adafruit.com/product/1374) (or generic module)
+- Connection: Direct GPIO
+
+**Wiring:**
+
+```text
+TTP223 Sensor -> Adafruit Feather ESP32-C6
+------------------------------------------
+VCC           -> 3.3V        (pin labeled "3V")
+GND           -> GND         (pin labeled "GND")
+SIG (Signal)  -> GPIO 5      (pin labeled "A3" / "IO5" on silkscreen)
+```
+
+> [!NOTE]
+> The silkscreen label and the GPIO number differ on this board. Look for the hole marked **A3** (also marked IO5) — that is GPIO 5 in code. Do NOT use the hole marked "D3", which is a different physical pin.
+
+**Expected Output (ttp223_touch):**
+
+```text
+[INFO ] Sensor Touched!
+[INFO ] Action: Tap (245ms)
+[INFO ] Sensor Released
+[INFO ] Sensor Touched!
+[INFO ] Action: Long Press!
+[INFO ] Sensor Released
+```
+
+---
+
 ### SPI Examples
 
 These examples use the hardware SPI bus of the ESP32-C6.
