@@ -98,6 +98,59 @@ cargo run --example bme280_i2c
 - Sensor: Adafruit BME280 Temperature Humidity Pressure Sensor
 - Connection: Qwiic/STEMMA QT cable (I2C)
 
+#### sths34pf80_i2c
+
+Reads presence, motion, and raw IR intensity data from an Adafruit STHS34PF80 IR Presence / Motion sensor and prints the values to the console.
+
+- **Presence & Motion:** These are algorithm-processed scores (signed 16-bit integers). Large positive or negative values indicate high activity or strong presence detection.
+- **Raw Obj IR Intensity:** This is the unscaled infrared radiant power seen by the sensor (register `0x26`). It fluctuates based on micro-changes in the heat signature of objects in view.
+- **Note:** This version of the example focuses on raw data. Real-time Ambient Temperature (register `0x28`) is currently not exposed by the version of the Rust crate being used.
+
+```bash
+cargo run --example sths34pf80_i2c
+```
+
+**Hardware:**
+
+- Sensor: [Adafruit STHS34PF80 IR Presence / Motion Sensor](https://www.adafruit.com/product/6426)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+**Expected Output:**
+
+```text
+[INFO ] Presence: 152 | Motion: -24 | Raw Obj IR: 2989 (Intensity)
+[INFO ] Presence: 562 | Motion: 392 | Raw Obj IR: 2568 (Intensity)
+[INFO ] Presence: 572 | Motion: 390 | Raw Obj IR: 2459 (Intensity)
+```
+
+#### sths34pf80_full
+
+Full-featured example for the STHS34PF80 sensor that matches Adafruit's Arduino driver output. It performs manual I2C register reads to access Ambient Temperature and Compensated Object data.
+
+**Understanding the Values:**
+
+- **Amb:** Real-time Ambient Temperature in °C.
+- **Pres & Mot:** Algorithm-processed Presence and Motion scores.
+- **Obj:** Raw IR Intensity (unscaled).
+- **Comp:** Compensated Object IR Intensity.
+
+```bash
+cargo run --example sths34pf80_full
+```
+
+**Hardware:**
+
+- Sensor: Adafruit STHS34PF80 IR Presence / Motion Sensor
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+**Expected Output:**
+
+```text
+[INFO ] Amb: 23.64°C | Pres: 1536 | Mot: 0 | Obj: 7849 | Comp: 7849
+[INFO ] Amb: 23.68°C | Pres: 1536 | Mot: 0 | Obj: 7805 | Comp: 7805
+[INFO ] Amb: 23.59°C | Pres: 1536 | Mot: 0 | Obj: 7912 | Comp: 7912
+```
+
 #### ssd1306_i2c
 
 Draws a 1-bit black and white image (64x64 pixels) on a 128x64 SSD1306 OLED screen over I2C.
