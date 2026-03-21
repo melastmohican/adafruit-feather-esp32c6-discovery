@@ -98,6 +98,20 @@ cargo run --example bme280_i2c
 - Sensor: Adafruit BME280 Temperature Humidity Pressure Sensor
 - Connection: Qwiic/STEMMA QT cable (I2C)
 
+#### newxie_thermometer
+
+Reads temperature and pressure from a BMP580 sensor and displays a graphical thermometer on an Adafruit 1.14" Color Newxie TFT Display.
+
+```bash
+cargo run --example newxie_thermometer
+```
+
+**Hardware:**
+
+- Sensor: [Adafruit BMP580 Stemma QT Precision Sensor](https://www.adafruit.com/product/6411)
+- Display: [Adafruit 1.14" 240x135 Color Newxie TFT Display](https://www.adafruit.com/product/4383)
+- Connection: Mixed (I2C for sensor, SPI for display)
+
 #### sths34pf80_i2c
 
 Reads presence, motion, and raw IR intensity data from an Adafruit STHS34PF80 IR Presence / Motion sensor and prints the values to the console.
