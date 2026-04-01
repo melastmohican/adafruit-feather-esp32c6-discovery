@@ -40,4 +40,7 @@ mipidsi = "0.8.0"
 ssd1306 = "0.10.0"
 tinybmp = "0.6.0"
 libm = "0.2.11"
-sths34pf80 = "0.1.12"
+sgp30 = "0.3.2"
+# modulino = "0.1.0"
+modulino = { git = "https://github.com/melastmohican/modulino-rs.git", branch = "main", features = ["defmt"] }
+sths34pf80 = "0.1.1"

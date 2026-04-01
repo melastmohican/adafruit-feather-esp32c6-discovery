@@ -165,6 +165,25 @@ cargo run --example sths34pf80_full
 [INFO ] Amb: 23.59°C | Pres: 1536 | Mot: 0 | Obj: 7912 | Comp: 7912
 ```
 
+#### modulino_light_i2c
+
+Reads RGB, IR, and Lux values from the Arduino Modulino Light sensor (LTR-381RGB) and prints them to the console.
+
+```bash
+cargo run --example modulino_light_i2c
+```
+
+**Hardware:**
+
+- Sensor: [Arduino Modulino Light (LTR-381RGB)](https://store-usa.arduino.cc/products/arduino-modulino-light)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+**Expected Output:**
+
+```text
+[INFO ] R: 1348, G: 1395, B: 402, IR: 36, Raw Lux: 1395, Lux: 247.78, Color: VERY DARK YELLOW
+```
+
 #### ssd1306_i2c
 
 Draws a 1-bit black and white image (64x64 pixels) on a 128x64 SSD1306 OLED screen over I2C.
