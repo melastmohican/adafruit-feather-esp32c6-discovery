@@ -20,6 +20,42 @@ The examples are grouped by the communication protocol they use.
 
 The standard I2C pins for the Adafruit Feather ESP32-C6 (SCL: IO18, SDA: IO19 as per the STEMMA QT / Qwiic connector) are used for these examples.
 
+#### i2c_scan
+
+Scans the primary I2C bus for connected devices and prints their addresses. Automatically enables power to the STEMMA QT port (`GPIO 20`) so devices attached via STEMMA QT will be discovered.
+
+```bash
+cargo run --example i2c_scan
+```
+
+#### adafruit_feather_sh1107
+
+Draws a 1-bit black and white image (64x64 pixels) on the Adafruit 128x64 OLED FeatherWing (SH1107) over I2C.
+
+```bash
+cargo run --example adafruit_feather_sh1107
+```
+
+**Hardware:**
+
+- Board: Adafruit Feather ESP32-C6
+- Display: [Adafruit 128x64 OLED FeatherWing (SH1107)](https://www.adafruit.com/product/4650)
+- Connection: Feather Headers (I2C: SDA on GPIO 19, SCL on GPIO 18)
+
+#### adafruit_feather_sh1107_text
+
+Demonstrates drawing text and shapes on the Adafruit 128x64 OLED FeatherWing (SH1107) over I2C.
+
+```bash
+cargo run --example adafruit_feather_sh1107_text
+```
+
+**Hardware:**
+
+- Board: Adafruit Feather ESP32-C6
+- Display: [Adafruit 128x64 OLED FeatherWing (SH1107)](https://www.adafruit.com/product/4650)
+- Connection: Feather Headers (I2C: SDA on GPIO 19, SCL on GPIO 18)
+
 #### bme280_ssd1306_i2c
 
 Reads temperature, humidity, and atmospheric pressure from an Adafruit BME280 sensor and displays the formatted values on a generic SSD1306 (128x64) OLED screen.

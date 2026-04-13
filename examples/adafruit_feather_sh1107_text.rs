@@ -21,7 +21,7 @@
 
 use defmt::info;
 use embedded_graphics::{
-    mono_font::{ascii::FONT_6X10, MonoTextStyleBuilder},
+    mono_font::{MonoTextStyleBuilder, ascii::FONT_6X10},
     pixelcolor::BinaryColor,
     prelude::*,
     primitives::{Circle, PrimitiveStyle, Rectangle},
