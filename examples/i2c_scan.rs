@@ -12,6 +12,19 @@
 //! **Note:** The STEMMA QT connector and onboard NeoPixel share a power pin (GPIO20)
 //! that must be pulled high for devices attached to it to power on. This example
 //! pulls that pin high to ensure everything is visible on the scan.
+//!
+//! ## Example Output
+//! ```text
+//! [INFO ] Enabling I2C / NeoPixel Power (GPIO 20) (i2c_scan adafruit-feather-esp32c6-discovery/examples/i2c_scan.rs:36)
+//! [INFO ] Initializing I2C bus scanner... (i2c_scan adafruit-feather-esp32c6-discovery/examples/i2c_scan.rs:46)
+//! [INFO ] Scanning I2C bus (addresses 0x00 to 0x7F)... (i2c_scan adafruit-feather-esp32c6-discovery/examples/i2c_scan.rs:58)
+//! [INFO ] ------------------------------------------- (i2c_scan adafruit-feather-esp32c6-discovery/examples/i2c_scan.rs:59)
+//! [INFO ] Device found at address 0x36 (i2c_scan adafruit-feather-esp32c6-discovery/examples/i2c_scan.rs:74)
+//! [INFO ] Device found at address 0x3C (i2c_scan adafruit-feather-esp32c6-discovery/examples/i2c_scan.rs:74)
+//! [INFO ] Device found at address 0x53 (i2c_scan adafruit-feather-esp32c6-discovery/examples/i2c_scan.rs:74)
+//! [INFO ] ------------------------------------------- (i2c_scan adafruit-feather-esp32c6-discovery/examples/i2c_scan.rs:79)
+//! [INFO ] Scan complete! Found 3 device(s) (i2c_scan adafruit-feather-esp32c6-discovery/examples/i2c_scan.rs:83)
+//! ```
 
 #![no_std]
 #![no_main]
