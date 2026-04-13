@@ -57,8 +57,8 @@ fn main() -> ! {
     delay.delay_millis(50);
 
     // Configure I2C pins for Adafruit Feather ESP32-C6
-    let sda = peripherals.GPIO18;
-    let scl = peripherals.GPIO19;
+    let sda = peripherals.GPIO19;
+    let scl = peripherals.GPIO18;
 
     // Create I2C peripheral with default configuration (100kHz)
     // BME280 supports up to 400kHz (Fast mode)
