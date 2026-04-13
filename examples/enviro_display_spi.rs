@@ -111,9 +111,12 @@ fn main() -> ! {
     let di = SPIInterface::new(spi_device, dc);
 
     // --- 3. DISPLAY INIT ---
-    // If it crashes here, LED stays ORANGE
+    // The ST7735s controller has a 132x162 memory.
+    // The Enviro+ panel is 80x160 portrait (physically landscape 160x80).
+    // We must define it as 80x160 and apply an offset to avoid mipidsi assertion panics.
     let mut display = Builder::new(ST7735s, di)
-        .display_size(160, 80)
+        .display_size(80, 160)
+        .display_offset(26, 1)
         .reset_pin(rst)
         .invert_colors(ColorInversion::Inverted)
         .color_order(ColorOrder::Bgr)
