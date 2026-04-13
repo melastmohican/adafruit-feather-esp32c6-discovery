@@ -19,6 +19,7 @@ use esp_hal::{
     delay::Delay,
     i2c::master::{Config as I2cConfig, I2c},
     main,
+    time::Rate,
 };
 use panic_rtt_target as _;
 
@@ -174,16 +175,17 @@ fn main() -> ! {
         esp_hal::gpio::OutputConfig::default(),
     );
 
-    // Give hardware a moment to boot
+    // Give hardware (especially I2C sensors) a moment to boot up after receiving power
     let mut delay = Delay::new();
-    delay.delay_millis(50);
+    delay.delay_millis(500);
 
     // Configure I2C pins for Adafruit Feather ESP32-C6
     let sda = peripherals.GPIO19;
     let scl = peripherals.GPIO18;
 
-    // Create I2C peripheral
-    let i2c = I2c::new(peripherals.I2C0, I2cConfig::default())
+    // Create I2C peripheral with explicit frequency (100kHz)
+    let i2c_config = I2cConfig::default().with_frequency(Rate::from_khz(100));
+    let i2c = I2c::new(peripherals.I2C0, i2c_config)
         .unwrap()
         .with_sda(sda)
         .with_scl(scl);
