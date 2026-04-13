@@ -1,24 +1,16 @@
-//! # BME280 Temperature/Humidity/Pressure Sensor Example for Rust ESP Board (ESP32-C3-DevKit-RUST-1)
+//! # BME280 Temperature/Humidity/Pressure Sensor Example for Adafruit Feather ESP32-C6
 //!
 //! Reads temperature, humidity, and atmospheric pressure from a BME280 sensor over I2C.
 //!
-//! This example is configured for the Adafruit BME280 breakout board connected via Qwiic/STEMMA QT connector.
-//!
 //! ## Hardware
+//! - **Board:** Adafruit Feather ESP32-C6
+//! - **Sensor:** Pimoroni Enviro+ FeatherWing (BME280)
+//! - **Connection:** FeatherWing Headers
 //!
-//! - **Sensor:** Pimoroni Enviro+ FeatherWing BME280 Temperature Humidity Pressure Sensor
-//! - **Connection:** FeatherWing (I2C)
-//! - **I2C Address:** 0x76 (default for Enviro+ FeatherWing BME280)
-//!
-//! ## FeatherWing Connection
-//!
-//! ```
-//!      FeatherWing BME280 -> Rust ESP Board (ESP32-C3-DevKit-RUST-1)
-//! GND -> GND
-//! VCC -> 3.3V
-//! SCL -> GPIO18 (I2C Clock)
-//! SDA -> GPIO19 (I2C Data)
-//! ```
+//! ## Pin Mapping (Feather C6)
+//! - **SDA:** GPIO 18
+//! - **SCL:** GPIO 19
+//! - **PWR:** GPIO 20 (Must be HIGH to power the headers/Stemma port)
 //!
 //! ## I2C Address
 //!
@@ -28,7 +20,7 @@
 //!
 //! The Pimoroni BME280 uses address 0x76 by default.
 //!
-//! Run with `cargo run --example bme280alt_i2c`.
+//! Run with `cargo run --example enviro_bme280_i2c`.
 
 #![no_std]
 #![no_main]
@@ -49,12 +41,24 @@ fn main() -> ! {
     rtt_target::rtt_init_defmt!();
 
     let peripherals = esp_hal::init(esp_hal::Config::default());
+    let mut delay = Delay::new();
 
     info!("Initializing BME280 sensor...");
 
-    // Configure I2C pins
-    let sda = peripherals.GPIO19;
-    let scl = peripherals.GPIO18;
+    // Power on the I2C / NeoPixel port (GPIO 20)
+    // This is required on the Feather C6 to power the Stemma QT port and headers
+    let _pwr = esp_hal::gpio::Output::new(
+        peripherals.GPIO20,
+        esp_hal::gpio::Level::High,
+        esp_hal::gpio::OutputConfig::default(),
+    );
+
+    // Give hardware a moment to boot
+    delay.delay_millis(50);
+
+    // Configure I2C pins for Adafruit Feather ESP32-C6
+    let sda = peripherals.GPIO18;
+    let scl = peripherals.GPIO19;
 
     // Create I2C peripheral with default configuration (100kHz)
     // BME280 supports up to 400kHz (Fast mode)
@@ -62,9 +66,6 @@ fn main() -> ! {
         .unwrap()
         .with_sda(sda)
         .with_scl(scl);
-
-    // Create delay provider
-    let mut delay = Delay::new();
 
     // Initialize BME280 sensor
     // Pimoroni BME280 uses 0x76 address (new_primary)
