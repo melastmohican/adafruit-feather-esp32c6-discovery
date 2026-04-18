@@ -1,10 +1,10 @@
 //! This example drives the 0.96" 160x80 ST7735R display on the Enviro+ FeatherWing.
 //!
 //! ## Why a Custom ST7735R Driver?
-//! We implement a custom `Model` because the standard `mipidsi` ST7735S driver enforces 
-//! strict coordinate validation. Applying the required (1, 26) offsets for this 0.96" panel 
+//! We implement a custom `Model` because the standard `mipidsi` ST7735S driver enforces
+//! strict coordinate validation. Applying the required (1, 26) offsets for this 0.96" panel
 //! would cause the library to panic (assertion failure: width + offset_x <= max_width).
-//! Our custom `St7735r` model bypasses this by reporting a logical framebuffer of 162x132 
+//! Our custom `St7735r` model bypasses this by reporting a logical framebuffer of 162x132
 //! to provide the necessary headroom for the centered offsets.
 //!
 //! ## Technical Rationale: The (1, 26) Offsets
@@ -38,10 +38,10 @@ use defmt::info;
 use display_interface::{DataFormat, WriteOnlyDataCommand};
 use display_interface_spi::SPIInterface;
 use embedded_graphics::{
+    mono_font::{MonoTextStyle, ascii::FONT_7X13},
     pixelcolor::{Rgb565, RgbColor},
     prelude::*,
     primitives::{Circle, PrimitiveStyleBuilder, Rectangle, StrokeAlignment},
-    mono_font::{ascii::FONT_7X13, MonoTextStyle},
     text::Text,
 };
 use embedded_hal::{delay::DelayNs, digital::OutputPin};
@@ -66,21 +66,21 @@ use mipidsi::{
 
 /// Custom Model for ST7735R based on Adafruit's initialization sequence
 ///
-/// This custom model is required because the standard `mipidsi` ST7735S model enforces 
-/// strict coordinate validation that causes runtime panics when applying the required 
-/// (1, 26) glass offsets. By reporting a logical buffer of 162x132, we provide 
+/// This custom model is required because the standard `mipidsi` ST7735S model enforces
+/// strict coordinate validation that causes runtime panics when applying the required
+/// (1, 26) glass offsets. By reporting a logical buffer of 162x132, we provide
 /// the necessary headroom for the centered landscape window.
 pub struct St7735r;
 
 impl Model for St7735r {
     type ColorFormat = Rgb565;
     // The ST7735R controller has a 132x162 pixel RAM.
-    // 
-    // RATIONALE FOR (162, 132): 
+    //
+    // RATIONALE FOR (162, 132):
     // The mipidsi 0.8.0 Builder performs a strict check: `width + offset_x <= max_width`.
     // For a 160x80 landscape request with a 1px offset, this results in `160 + 1 = 161`.
     // If we define the native width as 132 (the physical chip limit), the library panics.
-    // By logically swapping the limits to (162, 132), we move the 'long' 160-pixel 
+    // By logically swapping the limits to (162, 132), we move the 'long' 160-pixel
     // axis into the 162-pixel headroom, allowing landscape requests to pass validation.
     const FRAMEBUFFER_SIZE: (u16, u16) = (162, 132);
 
@@ -159,13 +159,17 @@ impl Model for St7735r {
         // 7. Component-specific overrides
         // 0x3A = COLMOD (16-bit color)
         // 0x21 = INVON (Important: This panel is physically inverted)
-        dcs.write_raw(0x3A, &[0x05]).map_err(|_| InitError::DisplayError)?; 
-        dcs.write_raw(0x21, &[]).map_err(|_| InitError::DisplayError)?;     
-        
+        dcs.write_raw(0x3A, &[0x05])
+            .map_err(|_| InitError::DisplayError)?;
+        dcs.write_raw(0x21, &[])
+            .map_err(|_| InitError::DisplayError)?;
+
         // 8. Finalize Normal Mode
-        dcs.write_command(mipidsi::dcs::EnterNormalMode).map_err(|_| InitError::DisplayError)?;
+        dcs.write_command(mipidsi::dcs::EnterNormalMode)
+            .map_err(|_| InitError::DisplayError)?;
         delay.delay_ms(10);
-        dcs.write_command(mipidsi::dcs::SetDisplayOn).map_err(|_| InitError::DisplayError)?;
+        dcs.write_command(mipidsi::dcs::SetDisplayOn)
+            .map_err(|_| InitError::DisplayError)?;
         delay.delay_ms(100);
 
         Ok(SetAddressMode::new(
@@ -230,14 +234,14 @@ fn main() -> ! {
     let di = SPIInterface::new(spi_device, dc);
 
     // 5. Initialize Display (Stable Centered Landscape)
-    // 
-    // Rationale: 
+    //
+    // Rationale:
     // - Rotation::Deg0 is the base landscape axis for the Enviro+ glass.
-    // - Offset (1, 26) centers the 160x80 image perfectly within the physical glass area, 
+    // - Offset (1, 26) centers the 160x80 image perfectly within the physical glass area,
     //   while avoiding edge-wrapping ghost lines seen at larger offsets.
     let mut display = Builder::new(St7735r, di)
-        .display_size(160, 80)                         // Full Screen Landscape
-        .display_offset(1, 26)                         // Stable physical center
+        .display_size(160, 80) // Full Screen Landscape
+        .display_offset(1, 26) // Stable physical center
         .invert_colors(ColorInversion::Normal)
         .color_order(ColorOrder::Bgr)
         .orientation(Orientation::default().rotate(Rotation::Deg0))

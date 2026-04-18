@@ -62,7 +62,7 @@ fn main() -> ! {
 
     loop {
         // Blink user LED every ~250ms (25 steps * 10ms)
-        if color_step % 25 == 0 {
+        if color_step.is_multiple_of(25) {
             user_led.toggle();
         }
 

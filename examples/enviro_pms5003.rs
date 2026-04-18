@@ -51,14 +51,9 @@ fn main() -> ! {
 
     let peripherals = esp_hal::init(HalConfig::default());
 
-
     // Power on the I2C / NeoPixel port (GPIO 20)
     // This is required on the Feather C6 to power the Stemma QT port and headers
-    let _pwr = Output::new(
-        peripherals.GPIO20,
-        Level::High,
-        OutputConfig::default(),
-    );
+    let _pwr = Output::new(peripherals.GPIO20, Level::High, OutputConfig::default());
 
     // Give hardware (especially I2C sensors) a moment to boot up after receiving power
     let delay = Delay::new();
@@ -91,7 +86,7 @@ fn main() -> ! {
         // 2. Initialize sensor and start "Deep Hunting" for a valid, non-zero frame
         let mut sensor = PmsX003Sensor::new(&mut uart);
         let mut found = false;
-        
+
         for _ in 0..20 {
             match sensor.read() {
                 Ok(frame) => {

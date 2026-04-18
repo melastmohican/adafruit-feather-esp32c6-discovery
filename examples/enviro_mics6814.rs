@@ -62,7 +62,7 @@ fn main() -> ! {
 
     let mut pin_nh3 = adc_config.enable_pin(peripherals.GPIO1, Attenuation::_11dB); // A0
     let mut pin_red = adc_config.enable_pin(peripherals.GPIO4, Attenuation::_11dB); // A1
-    let mut pin_ox  = adc_config.enable_pin(peripherals.GPIO6, Attenuation::_11dB); // A2, shared with LCD_CS
+    let mut pin_ox = adc_config.enable_pin(peripherals.GPIO6, Attenuation::_11dB); // A2, shared with LCD_CS
 
     let mut adc = Adc::new(peripherals.ADC1, adc_config);
     fn adc_to_resistance(raw: u32, adc_max: u32) -> Option<f32> {
@@ -87,16 +87,22 @@ fn main() -> ! {
 
     loop {
         // Triple-sample each channel with settle delays to handle high-impedance switching noise
-        let _ = adc.read_oneshot(&mut pin_ox); delay.delay_millis(30);
-        let _ = adc.read_oneshot(&mut pin_ox); delay.delay_millis(30);
+        let _ = adc.read_oneshot(&mut pin_ox);
+        delay.delay_millis(30);
+        let _ = adc.read_oneshot(&mut pin_ox);
+        delay.delay_millis(30);
         let raw_ox: u32 = adc.read_oneshot(&mut pin_ox).unwrap_or_default() as u32;
 
-        let _ = adc.read_oneshot(&mut pin_red); delay.delay_millis(30);
-        let _ = adc.read_oneshot(&mut pin_red); delay.delay_millis(30);
+        let _ = adc.read_oneshot(&mut pin_red);
+        delay.delay_millis(30);
+        let _ = adc.read_oneshot(&mut pin_red);
+        delay.delay_millis(30);
         let raw_red: u32 = adc.read_oneshot(&mut pin_red).unwrap_or_default() as u32;
 
-        let _ = adc.read_oneshot(&mut pin_nh3); delay.delay_millis(30);
-        let _ = adc.read_oneshot(&mut pin_nh3); delay.delay_millis(30);
+        let _ = adc.read_oneshot(&mut pin_nh3);
+        delay.delay_millis(30);
+        let _ = adc.read_oneshot(&mut pin_nh3);
+        delay.delay_millis(30);
         let raw_nh3: u32 = adc.read_oneshot(&mut pin_nh3).unwrap_or_default() as u32;
 
         let r_ox = adc_to_resistance(raw_ox, adc_max);
