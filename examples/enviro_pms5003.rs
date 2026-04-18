@@ -1,39 +1,32 @@
-//! # PMS5003 PM2.5 Air Quality Sensor (UART) Example
+//! # PMS5003 PM2.5 Air Quality Sensor (UART) Example for Adafruit Feather ESP32-C6
 //!
 //! Reads particulate matter data from a PMS5003 sensor over UART (9600 8N1)
 //! and prints PM1.0 / PM2.5 / PM10 concentrations via RTT/defmt.
 //!
 //! ## Hardware
 //!
-//! - **Board:** Rust ESP Board (ESP32-C3-DevKit-RUST-1)
-//! - **Sensor:** Adafruit PM2.5 Air Quality Sensor (PMS5003) with breadboard adapter
-//! - **FeatherWing:** Pimoroni Enviro+ FeatherWing (if used to mount the PMS5003)
+//! - **Board:** Adafruit Feather ESP32-C6
+//! - **Sensor:** Adafruit PM2.5 Air Quality Sensor (PMS5003)
+//! - **FeatherWing:** Pimoroni Enviro+ FeatherWing
 //!
-//! ## Wiring (recommended for this example)
+//! ## Wiring
 //!
-//! Wire the PMS5003 adapter to the Rust ESP Board as follows:
+//! On the Adafruit Feather ESP32-C6, the Enviro+ Wing connects the PMS5003 to:
 //!
 //! ```text
-//! PMS5003 TXD -> MCU GPIO21  (connects to MCU RX)
-//! PMS5003 RXD -> MCU GPIO20  (connects to MCU TX)
-//! PMS5003 VCC -> 5V (or as adapter requires)
-//! PMS5003 GND -> GND
+//! PMS5003 TXD -> MCU GPIO 17 (RX)
+//! PMS5003 RXD -> MCU GPIO 16 (TX)
 //! ```
-//!
-//! Note: the board silkscreen may label header pins `IO21/TX` and `IO20/RX`.
-//! The authoritative mapping is the SoC gpio names used in code (`peripherals.GPIO21` / `peripherals.GPIO20`).
-//! On this board the working wiring is: sensor TX -> `GPIO21`, sensor RX -> `GPIO20`.
 //!
 //! ## Notes
 //!
 //! - PMS5003 default UART settings: 9600 baud, 8 data bits, no parity, 1 stop bit.
-//! - The Adafruit adapter typically requires 5V VCC and includes level shifting — verify before connecting directly to 3.3V MCUs.
-//! - If you see no data, try swapping TX/RX assignments in the example and re-run.
+//! - Requires 5V VCC (VBUS) to be connected for the sensor fan and laser.
 //!
 //! ## Run
 //!
 //! ```bash
-//! cargo run --example pms5003
+//! cargo run --example enviro_pms5003
 //! ```
 
 #![no_std]
@@ -43,6 +36,7 @@ use defmt::println;
 use esp_hal::{
     Config as HalConfig,
     delay::Delay,
+    gpio::{Level, Output, OutputConfig},
     main,
     uart::{Config as UartConfig, Uart},
 };
@@ -57,41 +51,71 @@ fn main() -> ! {
 
     let peripherals = esp_hal::init(HalConfig::default());
 
-    // Simple delay
+
+    // Power on the I2C / NeoPixel port (GPIO 20)
+    // This is required on the Feather C6 to power the Stemma QT port and headers
+    let _pwr = Output::new(
+        peripherals.GPIO20,
+        Level::High,
+        OutputConfig::default(),
+    );
+
+    // Give hardware (especially I2C sensors) a moment to boot up after receiving power
     let delay = Delay::new();
+    delay.delay_millis(500);
 
     let config = UartConfig::default().with_baudrate(9_600);
 
-    let tx = peripherals.GPIO20; // MCU TX -> sensor RX
-    let rx = peripherals.GPIO21; // MCU RX <- sensor TX
+    // Physical slots labeled TX (16) and RX (17) on the Right Header
+    let tx = peripherals.GPIO16; // MCU TX -> sensor RX
+    let rx = peripherals.GPIO17; // MCU RX <- sensor TX
 
-    println!("Using MCU TX=GPIO20 (to sensor RX) and MCU RX=GPIO21 (from sensor TX)");
+    println!("Using MCU TX=GPIO16 and MCU RX=GPIO17 (Native C6 Slots)");
 
     // Create UART and bind pins
-    let uart = Uart::new(peripherals.UART1, config)
+    let mut uart = Uart::new(peripherals.UART1, config)
         .unwrap()
         .with_tx(tx)
         .with_rx(rx);
-
-    // Create sensor instance - esp-hal's Uart implements embedded-io traits
-    let mut sensor = PmsX003Sensor::new(uart);
 
     println!("PMS5003 sensor initialized");
     println!("Starting continuous readings...");
 
     loop {
-        match sensor.read() {
-            Ok(frame) => {
-                println!("PM1.0: {} μg/m³", frame.pm1_0);
-                println!("PM2.5: {} μg/m³", frame.pm2_5);
-                println!("PM10:  {} μg/m³", frame.pm10);
-                println!("---");
-            }
-            Err(e) => {
-                println!("Error reading sensor: {:?}", defmt::Debug2Format(&e));
+        // 1. Drain stale backlog from MCU UART buffer to ensure we catch the LATEST frame
+        while uart.read_ready() {
+            let mut discard = [0u8; 1];
+            let _ = uart.read(&mut discard);
+        }
+
+        // 2. Initialize sensor and start "Deep Hunting" for a valid, non-zero frame
+        let mut sensor = PmsX003Sensor::new(&mut uart);
+        let mut found = false;
+        
+        for _ in 0..20 {
+            match sensor.read() {
+                Ok(frame) => {
+                    // We hunt for non-zero frames to ensure the sensor is active and responsive
+                    if frame.pm2_5 > 0 || frame.pm10 > 0 {
+                        println!("PM1.0: {} μg/m³", frame.pm1_0);
+                        println!("PM2.5: {} μg/m³", frame.pm2_5);
+                        println!("PM10:  {} μg/m³", frame.pm10);
+                        println!("---");
+                        found = true;
+                        break;
+                    }
+                }
+                Err(_e) => {
+                    // Stale data or mid-packet sync, retry after a short delay
+                    delay.delay_millis(50);
+                }
             }
         }
 
-        delay.delay_millis(2000u32); // Read every 2 seconds
+        if !found {
+            println!("Wait: Catching fresh sync with PMS5003...");
+        }
+
+        delay.delay_millis(1500u32); // Pulse every 1.5s to match dashboard cadence
     }
 }

@@ -8,11 +8,11 @@
 //! - **Sensor:** Pimoroni Enviro+ FeatherWing (MICS6814)
 //!
 //! ## Pin Mapping (Feather C6)
-//! - **NH3 (A0):** GPIO 0
-//! - **RED (A1):** GPIO 1
-//! - **OX  (A2):** GPIO 6 (Note: Shared with LCD Chip Select!)
-//! - **EN  (D4):** GPIO 4 (Heater Enable)
-//! - **PWR:** GPIO 20 (Power Enable)
+//! - **NH3 (A0):** GPIO 1
+//! - **RED (A1):** GPIO 4
+//! - **OX (A2):**  GPIO 6 (Shared with LCD_CS)
+//! - **EN (D4):**  GPIO 3 (Heater Enable)
+//! - **PWR:**     GPIO 20 (Power Enable)
 //!
 //! The conversion formula mirrors Pimoroni's Python implementation:
 //! R = 56000 / ((ADC_MAX / raw) - 1)
@@ -51,17 +51,18 @@ fn main() -> ! {
         esp_hal::gpio::OutputConfig::default(),
     );
 
+    // Give hardware (especially I2C sensors) a moment to boot up after receiving power
     let delay = Delay::new();
+    delay.delay_millis(500);
 
-    let mut en = Output::new(peripherals.GPIO4, Level::Low, OutputConfig::default());
-    en.set_high();
-    info!("Enable pin set high (GPIO4)");
+    let _en = Output::new(peripherals.GPIO3, Level::High, OutputConfig::default());
+    info!("Enable pin set high (GPIO3)");
 
     let mut adc_config = AdcConfig::new();
 
-    let mut pin_ox = adc_config.enable_pin(peripherals.GPIO6, Attenuation::_11dB);
-    let mut pin_red = adc_config.enable_pin(peripherals.GPIO1, Attenuation::_11dB);
-    let mut pin_nh3 = adc_config.enable_pin(peripherals.GPIO0, Attenuation::_11dB);
+    let mut pin_nh3 = adc_config.enable_pin(peripherals.GPIO1, Attenuation::_11dB); // A0
+    let mut pin_red = adc_config.enable_pin(peripherals.GPIO4, Attenuation::_11dB); // A1
+    let mut pin_ox  = adc_config.enable_pin(peripherals.GPIO6, Attenuation::_11dB); // A2, shared with LCD_CS
 
     let mut adc = Adc::new(peripherals.ADC1, adc_config);
     fn adc_to_resistance(raw: u32, adc_max: u32) -> Option<f32> {
@@ -85,13 +86,18 @@ fn main() -> ! {
     let adc_max: u32 = 4095u32;
 
     loop {
-        let raw_ox_u16: u16 = adc.read_oneshot(&mut pin_ox).unwrap_or_default();
-        let raw_red_u16: u16 = adc.read_oneshot(&mut pin_red).unwrap_or_default();
-        let raw_nh3_u16: u16 = adc.read_oneshot(&mut pin_nh3).unwrap_or_default();
+        // Triple-sample each channel with settle delays to handle high-impedance switching noise
+        let _ = adc.read_oneshot(&mut pin_ox); delay.delay_millis(30);
+        let _ = adc.read_oneshot(&mut pin_ox); delay.delay_millis(30);
+        let raw_ox: u32 = adc.read_oneshot(&mut pin_ox).unwrap_or_default() as u32;
 
-        let raw_ox: u32 = raw_ox_u16 as u32;
-        let raw_red: u32 = raw_red_u16 as u32;
-        let raw_nh3: u32 = raw_nh3_u16 as u32;
+        let _ = adc.read_oneshot(&mut pin_red); delay.delay_millis(30);
+        let _ = adc.read_oneshot(&mut pin_red); delay.delay_millis(30);
+        let raw_red: u32 = adc.read_oneshot(&mut pin_red).unwrap_or_default() as u32;
+
+        let _ = adc.read_oneshot(&mut pin_nh3); delay.delay_millis(30);
+        let _ = adc.read_oneshot(&mut pin_nh3); delay.delay_millis(30);
+        let raw_nh3: u32 = adc.read_oneshot(&mut pin_nh3).unwrap_or_default() as u32;
 
         let r_ox = adc_to_resistance(raw_ox, adc_max);
         let r_red = adc_to_resistance(raw_red, adc_max);

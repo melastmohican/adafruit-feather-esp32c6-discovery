@@ -7,8 +7,8 @@
 //! - **Sensor:** Pimoroni Enviro+ FeatherWing (LTR559)
 //!
 //! ## Pin Mapping (Feather C6)
-//! - **SDA:** GPIO 18
-//! - **SCL:** GPIO 19
+//! - **SDA:** GPIO 19
+//! - **SCL:** GPIO 18
 //! - **PWR:** GPIO 20 (Must be HIGH to power the headers/Stemma port)
 
 #![no_std]
@@ -180,6 +180,7 @@ fn main() -> ! {
     delay.delay_millis(500);
 
     // Configure I2C pins for Adafruit Feather ESP32-C6
+    // Using Right Header mapping (proven via i2c_scan)
     let sda = peripherals.GPIO19;
     let scl = peripherals.GPIO18;
 

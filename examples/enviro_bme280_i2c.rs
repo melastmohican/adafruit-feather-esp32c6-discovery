@@ -8,8 +8,8 @@
 //! - **Connection:** FeatherWing Headers
 //!
 //! ## Pin Mapping (Feather C6)
-//! - **SDA:** GPIO 18
-//! - **SCL:** GPIO 19
+//! - **SDA:** GPIO 19
+//! - **SCL:** GPIO 18
 //! - **PWR:** GPIO 20 (Must be HIGH to power the headers/Stemma port)
 //!
 //! ## I2C Address
@@ -53,10 +53,11 @@ fn main() -> ! {
         esp_hal::gpio::OutputConfig::default(),
     );
 
-    // Give hardware a moment to boot
-    delay.delay_millis(50);
+    // Give hardware (especially I2C sensors) a moment to boot up after receiving power
+    delay.delay_millis(500);
 
     // Configure I2C pins for Adafruit Feather ESP32-C6
+    // Using Right Header mapping (proven via i2c_scan)
     let sda = peripherals.GPIO19;
     let scl = peripherals.GPIO18;
 

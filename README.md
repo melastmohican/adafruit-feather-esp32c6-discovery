@@ -248,6 +248,66 @@ cargo run --example ssd1306_i2c_text
 
 ---
 
+### Pimoroni Enviro+ FeatherWing Examples
+
+The [Enviro+ FeatherWing](https://shop.pimoroni.com/products/enviro-plus-featherwing) is a comprehensive environmental monitoring board. These examples have been stabilized specifically for the Adafruit Feather ESP32-C6's high-performance ADC and UART peripherals.
+
+#### enviro_all (Combined Dashboard)
+
+The primary entry point. Cycles through four dashboard pages (Climate, Light, Gas, Particles) on the integrated LCD.
+
+**Features:**
+- **Refined CS Strategy**: Automatically gates the shared GPIO 6 pin between SPI display and ADC sensing.
+- **Deep Hunting**: Clears UART backlogs and filters zero-frames for accurate PM readings.
+- **ADC Stabilization**: Uses triple-sampling and boot-time flushes for stable gas resistance.
+
+```bash
+cargo run --example enviro_all
+```
+
+#### enviro_mics6814
+
+Standalone gas sensor example for OX, RED, and NH3 detection. Aligned with the ESP32-C6's high-precision ADC pins.
+
+```bash
+cargo run --example enviro_mics6814
+```
+
+#### enviro_pms5003
+
+Standalone particle sensor example using the secondary hardware UART. Implements non-blocking backlog drainage.
+
+```bash
+cargo run --example enviro_pms5003
+```
+
+#### enviro_st7735r_spi
+
+Drives the onboard 0.96" LCD using a customized ST7735R model to achieve perfect (1, 26) centering.
+
+```bash
+cargo run --example enviro_st7735r_spi
+```
+
+#### Standalone Sensor Scripts
+
+- **Climate**: `cargo run --example enviro_bme280_i2c`
+- **Light/Prox**: `cargo run --example enviro_ltr559_i2c`
+
+**Golden Pinout (ESP32-C6):**
+
+| Enviro+ Function | MCU GPIO | MCU Slot |
+| :--- | :--- | :--- |
+| **I2C (SDA/SCL)** | 19 / 18 | STEMMA QT Port |
+| **UART (TX/RX)** | 16 / 17 | Native UART1 |
+| **LCD_CS / OX** | 6 | A2 (Shared Pin) |
+| **RED_SENSE** | 4 | A1 |
+| **NH3_SENSE** | 1 | A0 |
+| **HEATER_EN** | 3 | D4 |
+| **LCD_DC** | 5 | D5 |
+| **LCD_RST** | 7 | D9 |
+| **POWER_EN** | 20 | VBUS SW |
+
 ### Digital IO Examples
 
 Examples demonstrating digital input and output capabilities.
