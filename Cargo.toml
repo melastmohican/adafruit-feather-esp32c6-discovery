@@ -43,6 +43,6 @@ tinybmp = "0.6.0"
 libm = "0.2.11"
 sgp30 = "0.3.2"
 # modulino = "0.1.0"
-modulino = { git = "https://github.com/melastmohican/modulino-rs.git", branch = "main", features = ["defmt"] }
+modulino = { version = "0.2.0", features = ["defmt"] }
 sths34pf80 = "0.1.1"
 pmsx003 = "1.0.0"

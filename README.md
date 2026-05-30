@@ -201,6 +201,90 @@ cargo run --example sths34pf80_full
 [INFO ] Amb: 23.59°C | Pres: 1536 | Mot: 0 | Obj: 7912 | Comp: 7912
 ```
 
+#### modulino_buttons_i2c
+
+Reads button states from the Arduino Modulino Buttons module and controls its on-board LEDs.
+
+```bash
+cargo run --example modulino_buttons_i2c
+```
+
+**Hardware:**
+- Module: [Arduino Modulino Buttons](https://store-usa.arduino.cc/products/arduino-modulino-buttons)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+#### modulino_buzzer_i2c
+
+Plays the Super Mario Theme intro melody on the Arduino Modulino Buzzer module.
+
+```bash
+cargo run --example modulino_buzzer_i2c
+```
+
+**Hardware:**
+- Module: [Arduino Modulino Buzzer](https://store-usa.arduino.cc/products/arduino-modulino-buzzer)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+#### modulino_distance_i2c
+
+Reads high-precision distance measurements in millimeters from the Arduino Modulino Distance sensor (VL53L4CD) and prints them to the console.
+
+```bash
+cargo run --example modulino_distance_i2c
+```
+
+**Hardware:**
+- Module: [Arduino Modulino Distance](https://store-usa.arduino.cc/products/arduino-modulino-distance)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+#### modulino_joystick_i2c
+
+Reads x/y position coordinates, raw button state, angle, and magnitude from the Arduino Modulino Joystick and prints them to the console.
+
+```bash
+cargo run --example modulino_joystick_i2c
+```
+
+**Hardware:**
+- Module: [Arduino Modulino Joystick](https://store-usa.arduino.cc/products/arduino-modulino-joystick)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+#### modulino_knob_i2c
+
+Reads rotary encoder steps (bounded 0 to 100) and button state from the Arduino Modulino Knob and prints changes to the console.
+
+```bash
+cargo run --example modulino_knob_i2c
+```
+
+**Hardware:**
+- Module: [Arduino Modulino Knob](https://store-usa.arduino.cc/products/arduino-modulino-knob)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+#### modulino_latch_relay_i2c
+
+Demonstrates controlling states (ON, OFF, toggle) of the Arduino Modulino Latch Relay over I2C.
+
+```bash
+cargo run --example modulino_latch_relay_i2c
+```
+
+**Hardware:**
+- Module: [Arduino Modulino Latch Relay](https://store-usa.arduino.cc/products/arduino-modulino-latch-relay)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+#### modulino_led_matrix_i2c
+
+Cycles through 7 high-fidelity monochromatic and grayscale animations (Larson Scanner, Sinusoidal Wave, Matrix Rain, Breathing Smiley Face, Scrolling "RUST" Marquee Text, Sparkling Dissolve Rust Logo, and Grayscale Flame Simulation) on the 12x8 Arduino Modulino LED Matrix.
+
+```bash
+cargo run --example modulino_led_matrix_i2c
+```
+
+**Hardware:**
+- Module: [Arduino Modulino LED Matrix](https://store-usa.arduino.cc/products/arduino-modulino-led-matrix)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
 #### modulino_light_i2c
 
 Reads RGB, IR, and Lux values from the Arduino Modulino Light sensor (LTR-381RGB) and prints them to the console.
@@ -219,6 +303,54 @@ cargo run --example modulino_light_i2c
 ```text
 [INFO ] R: 1348, G: 1395, B: 402, IR: 36, Raw Lux: 1395, Lux: 247.78, Color: VERY DARK YELLOW
 ```
+
+#### modulino_movement_i2c
+
+Reads accelerometer and gyroscope data from the Arduino Modulino Movement module (LSM6DSOX) and logs x, y, and z values to the console.
+
+```bash
+cargo run --example modulino_movement_i2c
+```
+
+**Hardware:**
+- Module: [Arduino Modulino Movement](https://store-usa.arduino.cc/products/arduino-modulino-movement)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+#### modulino_pixels_i2c
+
+Demonstrates controlling the 8 RGB addressable NeoPixels on the Arduino Modulino Pixels module with 3 separate animations (Rainbow Colors, Knight Rider Scanner, and Color Fade Cycle).
+
+```bash
+cargo run --example modulino_pixels_i2c
+```
+
+**Hardware:**
+- Module: [Arduino Modulino Pixels](https://store-usa.arduino.cc/products/arduino-modulino-pixels)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+#### modulino_thermo_i2c
+
+Reads temperature and relative humidity measurements from the Arduino Modulino Thermo module (HS3003) and prints them to the console.
+
+```bash
+cargo run --example modulino_thermo_i2c
+```
+
+**Hardware:**
+- Module: [Arduino Modulino Thermo](https://store-usa.arduino.cc/products/arduino-modulino-thermo)
+- Connection: Qwiic/STEMMA QT cable (I2C)
+
+#### modulino_vibro_i2c
+
+Demonstrates controlling various haptic patterns and intensities on the Arduino Modulino Vibro module over I2C.
+
+```bash
+cargo run --example modulino_vibro_i2c
+```
+
+**Hardware:**
+- Module: [Arduino Modulino Vibro](https://store-usa.arduino.cc/products/arduino-modulino-vibro)
+- Connection: Qwiic/STEMMA QT cable (I2C)
 
 #### ssd1306_i2c
 
