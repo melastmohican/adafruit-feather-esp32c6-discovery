@@ -489,6 +489,42 @@ SIG (Signal)  -> GPIO 5      (pin labeled "A3" / "IO5" on silkscreen)
 [INFO ] Sensor Released
 ```
 
+#### dht11
+
+Reads temperature and relative humidity from a DHT11 sensor using a single bidirectional GPIO pin (`Flex`).
+
+```bash
+cargo run --example dht11 --release
+```
+
+**Hardware:**
+
+- Sensor: DHT11 Temperature & Humidity Sensor (bare or breakout module)
+- Connection: Direct GPIO
+
+**Wiring:**
+
+```text
+DHT11 Sensor  -> Adafruit Feather ESP32-C6
+------------------------------------------
+VCC (Pin 1)   -> 3.3V        (pin labeled "3V")
+DATA (Pin 2)  -> GPIO 5      (pin labeled "A3" / "IO5" on silkscreen)
+GND (Pin 4)   -> GND         (pin labeled "GND")
+```
+
+> [!IMPORTANT]
+> - **Pull-up Resistor:** The DHT11 data line requires a 4.7kΩ to 10kΩ pull-up resistor to VCC. If you are using a breakout module, it likely has this built-in. If you are using a raw 4-pin DHT11 sensor, you must wire one externally.
+> - **Release Mode:** The DHT11 protocol has extremely precise microsecond timing requirements. You must run this example with the `--release` flag (i.e. `cargo run --example dht11 --release`), otherwise timing overhead from debug builds will cause reading timeouts.
+
+**Expected Output:**
+
+```text
+[INFO ] Initializing DHT11 sensor on GPIO 5 (A3)...
+[INFO ] DHT11 initialized. Starting reading loop (every 2 seconds)...
+[INFO ] Temperature: 22°C | Humidity: 45%
+[INFO ] Temperature: 22°C | Humidity: 45%
+```
+
 ---
 
 ### SPI Examples

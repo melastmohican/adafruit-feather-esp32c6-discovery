@@ -9,6 +9,7 @@ dependencies = [
  "bme280",
  "critical-section",
  "defmt 1.0.1",
+ "dht-sensor",
  "display-interface",
  "display-interface-spi",
  "embedded-graphics",
@@ -255,6 +256,15 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.117",
+]
+
+[[package]]
+name = "dht-sensor"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fc206d619f4f078a875fccff279c5e78ec3e00e4557e1dbfda6e488208621e99"
+dependencies = [
+ "embedded-hal 1.0.0",
 ]
 
 [[package]]
