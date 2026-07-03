@@ -348,9 +348,41 @@ Demonstrates controlling various haptic patterns and intensities on the Arduino 
 cargo run --example modulino_vibro_i2c
 ```
 
+#### modulino_hub_multi_oled
+
+Demonstrates how to use multiple SSD1306 OLED displays connected to a Modulino Hub (TCA9548A I2C multiplexer) to display independent counts.
+
+```bash
+cargo run --example modulino_hub_multi_oled
+```
+
 **Hardware:**
-- Module: [Arduino Modulino Vibro](https://store-usa.arduino.cc/products/arduino-modulino-vibro)
+- Module: [Arduino Modulino Hub](https://store.arduino.cc/products/arduino-modulino-hub)
+- Displays: Two SSD1306 OLED displays (connected to Port 0 and Port 1 of the Hub)
 - Connection: Qwiic/STEMMA QT cable (I2C)
+
+**Wiring Diagram:**
+
+```text
+     Adafruit Feather ESP32-C6          Modulino Hub
+   +----------------------------+      +----------------------+
+   |                            |      |                      |
+   |  3.3V (Stemma V+) ---------+------+-> VCC                |
+   |  GND (Stemma GND) ---------+------+-> GND                |
+   |  GPIO19 (Stemma SDA) ------+------+-> SDA                |
+   |  GPIO18 (Stemma SCL) ------+------+-> SCL                |
+   |                            |      |                      |
+   +----------------------------+      +----------+-----------+
+                                                  |
+                                          +-------+-------+
+                                          |               |
+                                       Port 0          Port 1
+                                          |               |
+                                          v               v
+                                   +------------+  +------------+
+                                   | OLED Disp A|  | OLED Disp B|
+                                   +------------+  +------------+
+```
 
 #### ssd1306_i2c
 
